@@ -6,12 +6,13 @@
 /*   By: rbougssi <rbougssi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 12:23:09 by arraji            #+#    #+#             */
-/*   Updated: 2021/03/24 14:49:38 by rbougssi         ###   ########.fr       */
+/*   Updated: 2021/03/24 15:56:15 by rbougssi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
+# include <termcap.h>
+# include <term.h>
 void	init(t_all *all)
 {
 	if (g_env == NULL)
@@ -65,6 +66,15 @@ static void init_history(t_hist *history)
 	history->next = NULL;
 }
 
+void			canonical_no()
+{
+	struct termios term;
+
+	tcgetattr(0, &term);
+	term.c_lflag |= (ICANON | ECHO);
+	tcsetattr(0, TCSADRAIN, &term);
+}
+
 static void  clear_history(t_hist *head)
 {
 	t_hist *tmp;
@@ -103,4 +113,5 @@ int		main(int argc, char **argv, char **env)
 			clear(&all);
 	}
 	clear_history(&history);
+	canonical_no();
 }

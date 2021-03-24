@@ -6,13 +6,14 @@
 /*   By: rbougssi <rbougssi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 13:59:41 by arraji            #+#    #+#             */
-/*   Updated: 2021/03/24 15:37:32 by rbougssi         ###   ########.fr       */
+/*   Updated: 2021/03/24 16:07:16 by rbougssi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 # include <termcap.h>
 # include <term.h>
+
 static	void	set_return(void)
 {
 	int			ret;
@@ -121,7 +122,7 @@ void			up(t_hist *history, char **buff)
 	if (!history->current)
 		history->current = history;
 	write(1, history->current->cmd, ft_strlen(history->current->cmd));
-	// bzero(*buff, 1000);
+
 }
 
 void			down(t_hist *history, char *buff)

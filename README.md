@@ -1,3 +1,1 @@
-# termcaps-suck
-
-# the termcap API
+# termcap r cancer

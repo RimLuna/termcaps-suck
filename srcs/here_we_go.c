@@ -6,7 +6,7 @@
 /*   By: rbougssi <rbougssi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 13:59:41 by arraji            #+#    #+#             */
-/*   Updated: 2021/03/24 15:05:45 by rbougssi         ###   ########.fr       */
+/*   Updated: 2021/03/24 15:37:32 by rbougssi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,9 +115,13 @@ void clear_line()
 	ft_fprintf(1, "%s%s%s%s", BOLD, PRINT_GR, PS, RESET);
 }
 
-void			up(t_hist *history, char *buff)
+void			up(t_hist *history, char **buff)
 {
 	clear_line();
+	if (!history->current)
+		history->current = history;
+	write(1, history->current->cmd, ft_strlen(history->current->cmd));
+	// bzero(*buff, 1000);
 }
 
 void			down(t_hist *history, char *buff)
@@ -139,6 +143,29 @@ void			del()
 	write(1, buff, ft_strlen(buff));
 }
 
+void			add_to_history(t_hist *head, char *buff)
+{
+	if (!head->cmd)
+	{
+		head->cmd = ft_strdup(buff);
+		return ;
+	}
+	else if (!head->next)
+	{
+		head->next = (t_hist *)malloc(sizeof(t_hist));
+		head->next->next = NULL;
+		head->prev = head;
+		head->end = head->next;
+		head->next->cmd = ft_strdup(buff);
+		return ;
+	}
+	head->end->next = (t_hist *)malloc(sizeof(t_hist));
+	head->end->next->next = NULL;
+	head->end->next->prev = head;
+	head->end->next->cmd = ft_strdup(buff);
+	head->end = head->end->next;
+}
+
 char            *readikhaane(t_hist *history)
 {
     char c;
@@ -154,10 +181,11 @@ char            *readikhaane(t_hist *history)
         {
 			write(1, "\n", 1);
             buff[index] = '\0';
+			add_to_history(history, buff);
             return (buff);
         }
         if (c == 65)
-            up(history, buff);
+            up(history, &buff);
         else if (c == 66)
             down(history, buff);
 		else if (c == 127)
@@ -174,6 +202,21 @@ char            *readikhaane(t_hist *history)
     }
 }
 
+void			print_history(t_hist *history)
+{
+	t_hist		*tmp;
+	if (!history->cmd)
+		return ;
+	tmp = history;
+	printf("\nfuck history:\n");
+	while (tmp)
+	{
+		printf("%s\n", tmp->cmd);
+		tmp = tmp->next;
+	}
+	ft_putchar_fd('\n', 1);
+}
+
 t_bool			get_data(t_all *all, t_hist *history)
 {
 	(all->exit_status == 0) ? ft_fprintf(1, "%s%s%s%s", BOLD, PRINT_GR, PS,
@@ -181,7 +224,7 @@ t_bool			get_data(t_all *all, t_hist *history)
 /*	if ((all->parser.rt = get_next_line(1, &all->parser.line)) == -1)
 		return (error(E_STANDARD, 1, NULL));*/
 	all->parser.line = readikhaane(history);
-	
+	print_history(history);
 	if (lexer(all->parser.line, &all->parser) == FALSE ||
 	parser(all->parser.line, all) == FALSE)
 		return (FALSE);

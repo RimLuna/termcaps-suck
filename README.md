@@ -1,1 +1,1 @@
-# termcap r cancer
+# termcaps r cancer

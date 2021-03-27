@@ -6,7 +6,7 @@
 /*   By: rbougssi <rbougssi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 13:25:48 by arraji            #+#    #+#             */
-/*   Updated: 2021/03/24 14:53:49 by rbougssi         ###   ########.fr       */
+/*   Updated: 2021/03/25 18:25:43 by rbougssi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@
 # include "env_handle.h"
 # include "need.h"
 # include "signals_handler.h"
-
+# include "termcaps.h"
 
 char 	*buff;
 t_all	*g_all;

@@ -6,13 +6,13 @@
 /*   By: rbougssi <rbougssi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 13:59:41 by arraji            #+#    #+#             */
-/*   Updated: 2021/03/24 16:07:16 by rbougssi         ###   ########.fr       */
+/*   Updated: 2021/03/25 18:35:59 by rbougssi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-# include <termcap.h>
-# include <term.h>
+#include <termcap.h>
+#include <term.h>
 
 static	void	set_return(void)
 {
@@ -62,53 +62,6 @@ t_bool			here_we_go(t_all *all)
 	return (TRUE);
 }
 
-void    ft_cannonical_mod(void)
-{
-    struct termios term;
-    tcgetattr(0, &term);
-    term.c_lflag &= ~(ICANON);
-    term.c_lflag &= ~(ECHO);
-    term.c_lflag |= (ISIG);
-    term.c_cc[VMIN] = 1;
-    term.c_cc[VTIME] = 0;
-    tcsetattr(0, TCSADRAIN, &term);
-}
-void    ft_setterm(void)
-{
-    char    *termtype;
-    char    term_buffer[2048];
-    int     success;
-    termtype = getenv("TERM");
-    if (termtype == 0)
-    {
-        ft_putstr_fd("Specify a terminal type with `setenv TERM <yourtype>'.\n", 1);
-        exit(0);
-    }
-    success = tgetent(term_buffer, termtype);
-    if (success < 0)
-    {
-        ft_putstr_fd("Could not access the termcap data base.\n", 1);
-        exit(0);
-    }
-    if (success == 0)
-    {
-        ft_putstr_fd("Terminal type `%s' is not defined.\n", 1);
-        exit(0);
-    }
-    ft_cannonical_mod();
-}
-
-int     h_putchar(int c)
-{
-    write(1, &c, 1);
-    return (0);
-}
-
-void    ft_do_termcap(char *termcap)
-{
-    tputs(tgetstr(termcap, NULL), 1, &h_putchar);
-}
-
 void clear_line()
 {
 	ft_do_termcap("cr");
@@ -116,106 +69,12 @@ void clear_line()
 	ft_fprintf(1, "%s%s%s%s", BOLD, PRINT_GR, PS, RESET);
 }
 
-void			up(t_hist *history, char **buff)
-{
-	clear_line();
-	if (!history->current)
-		history->current = history;
-	write(1, history->current->cmd, ft_strlen(history->current->cmd));
-
-}
-
-void			down(t_hist *history, char *buff)
-{
-	clear_line();
-}
-
-void			del()
-{
-	// ft_do_termcap("le");
-	// ft_do_termcap("dc");
-	int		len;
-
-	len = ft_strlen(buff);
-	if (len == 0)
-		return ;
-	buff[len - 1] = '\0';
-	clear_line();
-	write(1, buff, ft_strlen(buff));
-}
-
-void			add_to_history(t_hist *head, char *buff)
-{
-	if (!head->cmd)
-	{
-		head->cmd = ft_strdup(buff);
-		return ;
-	}
-	else if (!head->next)
-	{
-		head->next = (t_hist *)malloc(sizeof(t_hist));
-		head->next->next = NULL;
-		head->prev = head;
-		head->end = head->next;
-		head->next->cmd = ft_strdup(buff);
-		return ;
-	}
-	head->end->next = (t_hist *)malloc(sizeof(t_hist));
-	head->end->next->next = NULL;
-	head->end->next->prev = head;
-	head->end->next->cmd = ft_strdup(buff);
-	head->end = head->end->next;
-}
-
 char            *readikhaane(t_hist *history)
 {
-    char c;
-    int  index;
+	char	*buff;
 
     ft_setterm();
-	buff = (char *)malloc(1000);
-    index = 0;
-    while (1)
-    {
-        read(0, &c, 1);
-        if (c == '\n')
-        {
-			write(1, "\n", 1);
-            buff[index] = '\0';
-			add_to_history(history, buff);
-            return (buff);
-        }
-        if (c == 65)
-            up(history, &buff);
-        else if (c == 66)
-            down(history, buff);
-		else if (c == 127)
-		{
-			if (index != 0)
-				index--;
-			del();
-		}
-        else if (ft_isprint(c))
-        {
-            buff[index++] = c;
-            write(1, &c, 1);
-        }
-    }
-}
 
-void			print_history(t_hist *history)
-{
-	t_hist		*tmp;
-	if (!history->cmd)
-		return ;
-	tmp = history;
-	printf("\nfuck history:\n");
-	while (tmp)
-	{
-		printf("%s\n", tmp->cmd);
-		tmp = tmp->next;
-	}
-	ft_putchar_fd('\n', 1);
 }
 
 t_bool			get_data(t_all *all, t_hist *history)
@@ -225,7 +84,7 @@ t_bool			get_data(t_all *all, t_hist *history)
 /*	if ((all->parser.rt = get_next_line(1, &all->parser.line)) == -1)
 		return (error(E_STANDARD, 1, NULL));*/
 	all->parser.line = readikhaane(history);
-	print_history(history);
+	// print_history(history);
 	if (lexer(all->parser.line, &all->parser) == FALSE ||
 	parser(all->parser.line, all) == FALSE)
 		return (FALSE);

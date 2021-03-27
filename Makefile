@@ -6,7 +6,7 @@
 #    By: rbougssi <rbougssi@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/18 16:04:41 by arraji            #+#    #+#              #
-#    Updated: 2021/03/24 13:07:46 by rbougssi         ###   ########.fr        #
+#    Updated: 2021/03/25 18:24:11 by rbougssi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,6 +43,7 @@ lexer.c \
 parser.c \
 here_we_go.c \
 export_need.c \
+termcaps.c
 
 BONUS_SRC_FILES = builtins_bonus.c \
 env_handle_bonus.c \
